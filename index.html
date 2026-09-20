@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aurora — Мессенджер нового поколения</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  :root {
+    --bg: #0a0a1a;
+    --bg2: #12122a;
+    --primary: #7c5cff;
+    --secondary: #00d4ff;
+    --accent: #ff5c9d;
+    --text: #eaeaff;
+    --muted: #8a8ab0;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+
+  /* Aurora background glow */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(124, 92, 255, 0.25), transparent 40%),
+      radial-gradient(circle at 80% 30%, rgba(0, 212, 255, 0.2), transparent 40%),
+      radial-gradient(circle at 50% 90%, rgba(255, 92, 157, 0.15), transparent 50%);
+    z-index: -1;
+    animation: auroraMove 20s ease-in-out infinite alternate;
+  }
+
+  @keyframes auroraMove {
+    0% { transform: scale(1) rotate(0deg); }
+    100% { transform: scale(1.2) rotate(5deg); }
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    padding: 20px 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    backdrop-filter: blur(20px);
+    background: rgba(10, 10, 26, 0.6);
+    border-bottom: 1px solid rgba(124, 92, 255, 0.15);
+    z-index: 100;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 24px;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .logo-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    box-shadow: 0 0 25px rgba(124, 92, 255, 0.6);
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 36px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 15px;
+    transition: color 0.3s;
+  }
+
+  .nav-links a:hover {
+    color: var(--text);
+  }
+
+  /* BUTTONS */
+  .btn {
+    padding: 12px 26px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    box-shadow: 0 8px 30px rgba(124, 92, 255, 0.4);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(124, 92, 255, 0.6);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid rgba(124, 92, 255, 0.4);
+  }
+
+  .btn-ghost:hover {
+    background: rgba(124, 92, 255, 0.1);
+    border-color: var(--primary);
+  }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 120px 40px 80px;
+    position: relative;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 8px 18px;
+    border-radius: 100px;
+    background: rgba(124, 92, 255, 0.15);
+    border: 1px solid rgba(124, 92, 255, 0.3);
+    color: var(--secondary);
+    font-size: 13px;
+    margin-bottom: 28px;
+    animation: fadeUp 0.8s ease;
+  }
+
+  h1 {
+    font-size: clamp(40px, 7vw, 84px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -2px;
+    margin-bottom: 24px;
+    animation: fadeUp 0.8s ease 0.1s backwards;
+  }
+
+  h1 .gradient {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .hero p {
+    font-size: clamp(16px, 2vw, 20px);
+    color: var(--muted);
+    max-width: 620px;
+    margin-bottom: 40px;
+    animation: fadeUp 0.8s ease 0.2s backwards;
+  }
+
+  .cta-group {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+    animation: fadeUp 0.8s ease 0.3s backwards;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* PHONE MOCKUP */
+  .phone-wrap {
+    margin-top: 80px;
+    perspective: 1000px;
+    animation: fadeUp 1s ease 0.5s backwards;
+  }
+
+  .phone {
+    width: 320px;
+    height: 640px;
+    border-radius: 44px;
+    background: linear-gradient(145deg, #1a1a3a, #0d0d20);
+    border: 2px solid rgba(124, 92, 255, 0.3);
+    padding: 16px;
+    box-shadow:
+      0 40px 100px rgba(124, 92, 255, 0.3),
+      0 0 0 8px rgba(10, 10, 26, 0.8);
+    transform: rotateY(-12deg) rotateX(8deg);
+    transition: transform 0.6s ease;
+    position: relative;
+  }
+
+  .phone:hover {
+    transform: rotateY(0) rotateX(0);
+  }
+
+  .phone-screen {
+    width: 100%;
+    height: 100%;
+    border-radius: 32px;
+    background: linear-gradient(180deg, #0f0f28, #0a0a1a);
+    padding: 20px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .chat-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(124, 92, 255, 0.15);
+  }
+
+  .avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 16px;
+    color: white;
+  }
+
+  .chat-name {
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .chat-status {
+    font-size: 11px;
+    color: var(--secondary);
+  }
+
+  .messages {
+    flex: 1;
+    padding: 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .msg {
+    max-width: 75%;
+    padding: 10px 14px;
+    border-radius: 16px;
+    font-size: 13px;
+    line-height: 1.4;
+    animation: fadeUp 0.5s ease backwards;
+  }
+
+  .msg.in {
+    background: rgba(124, 92, 255, 0.15);
+    border: 1px solid rgba(124, 92, 255, 0.2);
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+  }
+
+  .msg.out {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+  }
+
+  .msg:nth-child(1) { animation-delay: 0.6s; }
+  .msg:nth-child(2) { animation-delay: 0.9s; }
+  .msg:nth-child(3) { animation-delay: 1.2s; }
+  .msg:nth-child(4) { animation-delay: 1.5s; }
+
+  /* FEATURES */
+  section {
+    padding: 100px 60px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .section-title {
+    text-align: center;
+    margin-bottom: 70px;
+  }
+
+  .section-title h2 {
+    font-size: clamp(32px, 4vw, 48px);
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin-bottom: 16px;
+  }
+
+  .section-title p {
+    color: var(--muted);
+    font-size: 17px;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+  }
+
+  .feature {
+    padding: 32px;
+    border-radius: 20px;
+    background: linear-gradient(145deg, rgba(124, 92, 255, 0.08), rgba(0, 212, 255, 0.04));
+    border: 1px solid rgba(124, 92, 255, 0.15);
+    transition: all 0.4s;
+    cursor: default;
+  }
+
+  .feature:hover {
+    transform: translateY(-6px);
+    border-color: rgba(124, 92, 255, 0.5);
+    box-shadow: 0 20px 50px rgba(124, 92, 255, 0.2);
+  }
+
+  .feature-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 24px rgba(124, 92, 255, 0.4);
+  }
+
+  .feature h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+    font-weight: 700;
+  }
+
+  .feature p {
+    color: var(--muted);
+    font-size: 15px;
+  }
+
+  /* DOWNLOAD */
+  .download {
+    text-align: center;
+    padding: 100px 40px;
+  }
+
+  .download-card {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 70px 40px;
+    border-radius: 32px;
+    background: linear-gradient(145deg, rgba(124, 92, 255, 0.15), rgba(0, 212, 255, 0.08));
+    border: 1px solid rgba(124, 92, 255, 0.3);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .download-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(from 0deg, transparent, rgba(124, 92, 255, 0.15), transparent, rgba(0, 212, 255, 0.15), transparent);
+    animation: rotate 12s linear infinite;
+    z-index: -1;
+  }
+
+  @keyframes rotate {
+    to { transform: rotate(360deg); }
+  }
+
+  .download h2 {
+    font-size: clamp(28px, 4vw, 44px);
+    font-weight: 800;
+    margin-bottom: 16px;
+  }
+
+  .download p {
+    color: var(--muted);
+    margin-bottom: 40px;
+    font-size: 17px;
+  }
+
+  .web-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    padding: 20px 40px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    text-decoration: none;
+    border-radius: 18px;
+    font-size: 18px;
+    font-weight: 700;
+    box-shadow: 0 15px 50px rgba(124, 92, 255, 0.5);
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .web-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.6s;
+  }
+
+  .web-btn:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 25px 70px rgba(124, 92, 255, 0.7);
+  }
+
+  .web-btn:hover::before {
+    left: 100%;
+  }
+
+  .web-btn span {
+    font-size: 26px;
+  }
+
+  .web-url {
+    margin-top: 24px;
+    color: var(--muted);
+    font-size: 14px;
+    font-family: 'Monaco', 'Courier New', monospace;
+  }
+
+  .web-url strong {
+    color: var(--secondary);
+    font-weight: 600;
+  }
+
+  .note {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 8px 18px;
+    border-radius: 100px;
+    background: rgba(255, 92, 157, 0.12);
+    border: 1px solid rgba(255, 92, 157, 0.3);
+    color: var(--accent);
+    font-size: 13px;
+  }
+
+  /* FOOTER */
+  footer {
+    padding: 50px 60px 30px;
+    border-top: 1px solid rgba(124, 92, 255, 0.15);
+    text-align: center;
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  footer .logo {
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+    list-style: none;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+
+  .footer-links a {
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+
+  .footer-links a:hover {
+    color: var(--secondary);
+  }
+
+  /* MOBILE */
+  @media (max-width: 768px) {
+    nav {
+      padding: 16px 24px;
+    }
+
+    .nav-links {
+      display: none;
+    }
+
+    section {
+      padding: 70px 24px;
+    }
+
+    .phone {
+      width: 280px;
+      height: 560px;
+      transform: none;
+    }
+
+    .download-card {
+      padding: 50px 24px;
+    }
+
+    .web-btn {
+      padding: 16px 28px;
+      font-size: 16px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">
+    <div class="logo-icon">🌌</div>
+    Aurora
+  </div>
+  <ul class="nav-links">
+    <li><a href="#features">Возможности</a></li>
+    <li><a href="#download">Открыть</a></li>
+    <li><a href="#">Поддержка</a></li>
+  </ul>
+  <a href="https://family-chat-vscp.onrender.com" target="_blank" class="btn btn-primary">Открыть в браузере</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="badge">✨ Веб-версия уже доступна</div>
+  <h1>
+    Общайся <span class="gradient">ярко</span><br>
+    с Aurora
+  </h1>
+  <p>Быстрый, безопасный и невероятно красивый мессенджер. Шифрование end-to-end, облачные чаты и стикеры, которые оживают.</p>
+  <div class="cta-group">
+    <a href="https://family-chat-vscp.onrender.com" target="_blank" class="btn btn-primary">Открыть веб-версию</a>
+    <a href="#features" class="btn btn-ghost">Узнать больше</a>
+  </div>
+
+  <div class="phone-wrap">
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="chat-header">
+          <div class="avatar">A</div>
+          <div>
+            <div class="chat-name">Aurora Team</div>
+            <div class="chat-status">● онлайн</div>
+          </div>
+        </div>
+        <div class="messages">
+          <div class="msg in">Привет! Добро пожаловать в Aurora 🌌</div>
+          <div class="msg out">Вау, тут так красиво!</div>
+          <div class="msg in">Попробуй отправить живой стикер 🎨</div>
+          <div class="msg out">Уже пробую ✨</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="section-title">
+    <h2>Почему Aurora?</h2>
+    <p>Мы переосмыслили мессенджер с нуля — чтобы общение было в удовольствие</p>
+  </div>
+
+  <div class="features">
+    <div class="feature">
+      <div class="feature-icon">🔒</div>
+      <h3>Сквозное шифрование</h3>
+      <p>Все сообщения защищены end-to-end шифрованием. Никто, кроме вас, не прочитает переписку.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">⚡</div>
+      <h3>Молниеносно быстро</h3>
+      <p>Работает даже на слабом интернете. Сообщения доставляются за миллисекунды.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">🎨</div>
+      <h3>Живые стикеры</h3>
+      <p>Создавай собственные анимированные стикеры и делись ими с друзьями.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">☁️</div>
+      <h3>Облачные чаты</h3>
+      <p>История сообщений сохраняется в облаке и доступна с любого устройства.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">🎥</div>
+      <h3>HD-звонки</h3>
+      <p>Групповые видеозвонки в кристально чистом качестве — без границ и ограничений.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">🌙</div>
+      <h3>Тёмная тема</h3>
+      <p>Глаза скажут спасибо. Плавные анимации и глубокие цвета в любое время суток.</p>
+    </div>
+  </div>
+</section>
+
+<!-- DOWNLOAD / WEB APP -->
+<section id="download" class="download">
+  <div class="download-card">
+    <h2>Aurora уже доступен 🌐</h2>
+    <p>Никаких установок — просто открой в браузере и начни общаться. Работает на любом устройстве: телефоне, планшете или компьютере.</p>
+
+    <a href="https://family-chat-vscp.onrender.com" target="_blank" class="web-btn">
+      <span>🚀</span>
+      Открыть веб-приложение
+    </a>
+
+    <div class="web-url">
+      <strong>https://family-chat-vscp.onrender.com</strong>
+    </div>
+
+    <div class="note">💡 Пока что доступен только в веб-версии</div>
+  </div>
+</section>
+
+<footer>
+  <div class="logo">
+    <div class="logo-icon">🌌</div>
+    Aurora
+  </div>
+  <ul class="footer-links">
+    <li><a href="#">О нас</a></li>
+    <li><a href="#">Политика конфиденциальности</a></li>
+    <li><a href="#">Условия использования</a></li>
+    <li><a href="#">Контакты</a></li>
+  </ul>
+  <p>© 2025 Aurora Messenger. Все права защищены.</p>
+</footer>
+
+</body>
+</html>
